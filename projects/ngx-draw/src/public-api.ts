@@ -2,5 +2,5 @@
  * Public API Surface of ngx-draw
  */
 
-export * from './lib/ngx-draw.service';
-export * from './lib/ngx-draw.component';
+export { NgxDrawModule } from './lib/ngx-draw.module';
+export { DrawComponent } from './lib/draw/draw.component';

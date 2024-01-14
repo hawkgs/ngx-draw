@@ -7,7 +7,7 @@
       "projectType": "library",
       "root": "projects/ngx-draw",
       "sourceRoot": "projects/ngx-draw/src",
-      "prefix": "lib",
+      "prefix": "ngx",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
@@ -132,6 +132,7 @@
     }
   },
   "cli": {
-    "analytics": "1df95ccf-aca2-46cf-879e-0da055010023"
+    "analytics": "1df95ccf-aca2-46cf-879e-0da055010023",
+    "schematicCollections": ["@angular-eslint/schematics"]
   }
 }
