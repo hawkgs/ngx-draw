@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  border: 1px solid red;
+}
+
+.ngx-draw {
+  &__canvas {
+  }
+
+  &__ctrls {
+    border: 1px solid blue;
+  }
+}
