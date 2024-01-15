@@ -1,12 +1,12 @@
 import { HTMLCanvasSketch } from './html-canvas-sketch';
-import { ToolController } from './tools';
+import { Controller } from './controller';
 import { Sketch } from './types';
 
 export const createSketchFactory = (
   canvas: HTMLCanvasElement,
-): { sketch: Sketch; ctrl: ToolController } => {
+): { sketch: Sketch; ctrl: Controller } => {
   const sketch = new HTMLCanvasSketch(canvas);
-  const ctrl = new ToolController(sketch);
+  const ctrl = new Controller(sketch);
 
   return {
     sketch,

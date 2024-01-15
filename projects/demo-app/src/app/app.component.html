@@ -1,2 +1,3 @@
-<p>ready 1 2</p>
-<ngx-draw></ngx-draw>
+<ngx-draw #ngxDraw="ngxDrawRef">
+  <ngx-control-bar [controller]="ngxDraw.controller$ | async"></ngx-control-bar>
+</ngx-draw>
