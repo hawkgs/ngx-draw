@@ -5,10 +5,11 @@ export interface Tool<T> {
   type: string;
   config: T;
 
-  setContext(ctx: CanvasContext): void;
+  setup(ctx: CanvasContext): void;
   start(x: number, y: number): void;
   move(x: number, y: number): void;
   stop(): void;
+  copy(): Tool<T>;
 }
 
 export abstract class Sketch {
@@ -16,6 +17,7 @@ export abstract class Sketch {
 
   abstract undo(): void;
   abstract redo(): void;
+  abstract clear(): void;
   abstract exportAsPng(): void;
   abstract startApplyingTool(x: number, y: number): void;
   abstract moveTool(x: number, y: number): void;

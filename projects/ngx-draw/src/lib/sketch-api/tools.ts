@@ -23,7 +23,7 @@ export class Pen implements Tool<PenConfig> {
 
   constructor(public config: PenConfig) {}
 
-  setContext(ctx: CanvasRenderingContext2D): void {
+  setup(ctx: CanvasRenderingContext2D): void {
     this._ctx = ctx;
     this._ctx.lineWidth = this.config.thickness;
     this._ctx.strokeStyle = ColorMap[this.config.color];
@@ -44,21 +44,37 @@ export class Pen implements Tool<PenConfig> {
   }
 
   stop(): void {}
+
+  copy(): Tool<PenConfig> {
+    return new Pen({
+      color: this.config.color,
+      thickness: this.config.thickness,
+    });
+  }
 }
 
 export class Eraser implements Tool<void> {
-  setContext(ctx: CanvasRenderingContext2D): void {
-    throw new Error('Method not implemented.');
+  readonly type: ToolType = 'eraser';
+  readonly config: void = undefined;
+  private _ctx!: CanvasRenderingContext2D;
+
+  setup(ctx: CanvasRenderingContext2D): void {
+    this._ctx = ctx;
   }
+
   start(x: number, y: number): void {
     throw new Error('Method not implemented.');
   }
+
   move(x: number, y: number): void {
     throw new Error('Method not implemented.');
   }
+
   stop(): void {
     throw new Error('Method not implemented.');
   }
-  readonly type: ToolType = 'eraser';
-  readonly config: void = undefined;
+
+  copy(): Tool<void> {
+    return new Eraser();
+  }
 }

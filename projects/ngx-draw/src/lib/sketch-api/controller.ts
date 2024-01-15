@@ -35,6 +35,10 @@ export class Controller {
     this._sketch.redo();
   }
 
+  clear() {
+    this._sketch.clear();
+  }
+
   exportAsPng() {
     this._sketch.exportAsPng();
   }
