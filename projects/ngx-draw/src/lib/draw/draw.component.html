@@ -1,4 +1,9 @@
-<canvas #canvas class="ngx-draw__canvas"></canvas>
+<canvas
+  #canvas
+  class="ngx-draw__canvas"
+  [width]="cfg.width"
+  [height]="cfg.height"
+></canvas>
 <div class="ngx-draw__ctrls">
   <ng-content></ng-content>
 </div>

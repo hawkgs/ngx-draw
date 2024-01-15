@@ -6,6 +6,7 @@ import {
   Input,
   NgZone,
   OnDestroy,
+  OnInit,
   Renderer2,
   ViewChild,
 } from '@angular/core';
@@ -19,6 +20,11 @@ export interface NgxDrawConfig {
   height: number;
 }
 
+const DefaultConfig: NgxDrawConfig = {
+  width: 800,
+  height: 600,
+};
+
 @Component({
   selector: 'ngx-draw',
   templateUrl: './draw.component.html',
@@ -30,16 +36,22 @@ export interface NgxDrawConfig {
     class: 'ngx-draw',
   },
 })
-export class DrawComponent implements AfterViewInit, OnDestroy {
+export class DrawComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('canvas') canvas!: ElementRef;
-  @Input() config!: NgxDrawConfig;
+  @Input() config?: NgxDrawConfig;
   public controller$ = new Subject<Controller>();
 
   private _sketch!: Sketch;
   private _cbs: (() => void)[] = [];
   private _controller?: Controller;
 
+  cfg!: NgxDrawConfig;
+
   constructor(private _renderer: Renderer2, private _zone: NgZone) {}
+
+  ngOnInit(): void {
+    this.cfg = { ...DefaultConfig, ...(this.config ? this.config : {}) };
+  }
 
   ngAfterViewInit(): void {
     const canvas = this.canvas.nativeElement as HTMLCanvasElement;
@@ -73,15 +85,15 @@ export class DrawComponent implements AfterViewInit, OnDestroy {
     this._cbs.forEach((cb) => cb());
   }
 
-  private _onCanvasMouseDown(e: Event) {
-    this._sketch.startApplyingTool(0, 0);
+  private _onCanvasMouseDown(e: MouseEvent) {
+    this._sketch.startApplyingTool(e.clientX, e.clientY);
   }
 
   private _onCanvasMouseUp(e: Event) {
     this._sketch.stopApplyingTool();
   }
 
-  private _onCanvasMouseMove(e: Event) {
-    this._sketch.moveTool(0, 0);
+  private _onCanvasMouseMove(e: MouseEvent) {
+    this._sketch.moveTool(e.clientX, e.clientY);
   }
 }
