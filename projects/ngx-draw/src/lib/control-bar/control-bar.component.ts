@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Controller } from '../sketch-api/controller';
+import { PenColor, PenThickness } from '../sketch-api/tools';
 
 @Component({
   selector: 'ngx-control-bar',
@@ -12,4 +13,10 @@ import { Controller } from '../sketch-api/controller';
 })
 export class ControlBarComponent {
   @Input() controller!: Controller | null;
+  thickness: PenThickness = 1;
+  color: PenColor = 'black';
+
+  selectPen() {
+    this.controller?.pickPen(this.thickness, this.color);
+  }
 }

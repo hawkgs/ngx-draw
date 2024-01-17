@@ -1,3 +1,4 @@
+import { Injector, Renderer2, RendererFactory2, inject } from '@angular/core';
 import { Pen } from './tools';
 import { Sketch, Tool } from './types';
 
@@ -13,14 +14,14 @@ export class HTMLCanvasSketch extends Sketch {
   private _currentPath: number[] = [];
   private _history: Operation<unknown>[] = [];
   private _historyOffset: number = 0;
+  private _renderer: Renderer2;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, injector: Injector) {
     super(canvas);
-    this._ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-    (window as any).getHistory = () => {
-      console.log(this._history);
-    };
+    this._ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    const rendererFactory = injector.get(RendererFactory2);
+    this._renderer = rendererFactory.createRenderer(null, null);
   }
 
   private get _canvas(): HTMLCanvasElement {
@@ -38,9 +39,7 @@ export class HTMLCanvasSketch extends Sketch {
     this._clearCanvas();
 
     for (let i = 0; i < opIdx; i += 1) {
-      // setTimeout(() => {
       this._applyOperation(this._history[i]);
-      // });
     }
   }
 
@@ -60,7 +59,7 @@ export class HTMLCanvasSketch extends Sketch {
   }
 
   exportAsPng(): void {
-    // throw new Error('Method not implemented.');
+    throw new Error('Method not implemented.');
   }
 
   startApplyingTool(x: number, y: number): void {

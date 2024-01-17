@@ -1,14 +1,15 @@
 import { Tool } from './types';
 
 export type PenThickness = 1 | 2 | 3 | 4 | 5;
-export type PenColor = 'green' | 'red' | 'blue' | 'black';
+export type PenColor = 'green' | 'red' | 'blue' | 'black' | 'yellow';
 export type ToolType = 'pen' | 'eraser';
 
 const ColorMap: { [key in PenColor]: string } = {
-  green: 'green',
-  red: '#f00',
-  black: '#000',
-  blue: 'blue',
+  green: '#57a31d',
+  red: '#eb4034',
+  black: '#171717',
+  blue: '#125cc4',
+  yellow: '#ffc400',
 };
 
 const EraserThickness = 10;

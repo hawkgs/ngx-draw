@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  Injector,
   Input,
   NgZone,
   OnDestroy,
@@ -43,12 +44,15 @@ export class DrawComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private _sketch!: Sketch;
   private _cbs: (() => void)[] = [];
-  private _controller?: Controller;
   private _offset: { x: number; y: number } = { x: 0, y: 0 };
 
   cfg!: NgxDrawConfig;
 
-  constructor(private _renderer: Renderer2, private _zone: NgZone) {}
+  constructor(
+    private _renderer: Renderer2,
+    private _injector: Injector,
+    private _zone: NgZone,
+  ) {}
 
   ngOnInit(): void {
     this.cfg = { ...DefaultConfig, ...(this.config ? this.config : {}) };
@@ -57,9 +61,8 @@ export class DrawComponent implements AfterViewInit, OnInit, OnDestroy {
   ngAfterViewInit(): void {
     const canvas = this.canvas.nativeElement as HTMLCanvasElement;
 
-    const { sketch, ctrl } = createSketchFactory(canvas);
+    const { sketch, ctrl } = createSketchFactory(canvas, this._injector);
     this._sketch = sketch;
-    this._controller = ctrl;
 
     // Note(Georgi): A change happening after the component has been checked (i.e. ngx-controls-bar)
     setTimeout(() => {

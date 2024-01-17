@@ -1,5 +1,22 @@
+<!-- NOTE(Georgi): Improve / TBD -->
 <button (click)="controller?.undo()">Undo</button>
 <button (click)="controller?.redo()">Redo</button>
-<button (click)="controller?.pickPen(1, 'black')">Pick Pen</button>
 <button (click)="controller?.pickEraser()">Pick Eraser</button>
 <button (click)="controller?.clear()">Clear</button>
+<div>
+  <select [(ngModel)]="thickness">
+    <option value="1">1</option>
+    <option valye="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+  </select>
+  <select [(ngModel)]="color">
+    <option value="black">black</option>
+    <option value="blue">blue</option>
+    <option value="red">red</option>
+    <option value="green">green</option>
+    <option value="yellow">yellow</option>
+  </select>
+  <button (click)="selectPen()">Pick pen</button>
+</div>
