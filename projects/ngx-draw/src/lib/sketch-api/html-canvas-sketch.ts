@@ -59,14 +59,7 @@ export class HTMLCanvasSketch extends Sketch {
   }
 
   startApplyingTool(x: number, y: number): void {
-    if (this._historyOffset < 0) {
-      const hisLen = this._history.length;
-      const opIdx = hisLen + this._historyOffset;
-
-      this._history.splice(opIdx, hisLen);
-
-      this._historyOffset = 0;
-    }
+    this._resetHistory();
 
     this._toolInUse = true;
     this._tool.start(x, y);
@@ -131,6 +124,17 @@ export class HTMLCanvasSketch extends Sketch {
     destCtx?.drawImage(source, 0, 0);
 
     return dest;
+  }
+
+  private _resetHistory() {
+    if (this._historyOffset < 0) {
+      const hisLen = this._history.length;
+      const opIdx = hisLen + this._historyOffset;
+
+      this._history.splice(opIdx, hisLen);
+
+      this._historyOffset = 0;
+    }
   }
 
   private _addHistoryOperation(op: Operation<unknown>) {
