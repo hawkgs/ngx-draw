@@ -40,18 +40,14 @@ export class HTMLCanvasSketch extends Sketch {
     if (this._history.length + this._historyOffset === 0) {
       return;
     }
-
-    this._historyOffset--;
-    this._applyHistoryChange();
+    this._navigateHistory('prev');
   }
 
   redo(): void {
     if (this._historyOffset === 0) {
       return;
     }
-
-    this._historyOffset++;
-    this._applyHistoryChange();
+    this._navigateHistory('next');
   }
 
   exportAsPng(): void {
@@ -146,7 +142,13 @@ export class HTMLCanvasSketch extends Sketch {
     }
   }
 
-  private _applyHistoryChange() {
+  private _navigateHistory(move: 'prev' | 'next') {
+    if (move === 'prev') {
+      this._historyOffset--;
+    } else {
+      this._historyOffset++;
+    }
+
     const opIdx = this._history.length + this._historyOffset;
 
     this._clearCanvas();
