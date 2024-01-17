@@ -1,8 +1,10 @@
 <canvas
   #canvas
   class="ngx-draw__canvas"
-  [width]="cfg.width"
-  [height]="cfg.height"
+  [width]="cfg.width * CMF"
+  [height]="cfg.height * CMF"
+  [style.width]="cfg.width + 'px'"
+  [style.height]="cfg.height + 'px'"
 ></canvas>
 <div class="ngx-draw__ctrls">
   <ng-content></ng-content>

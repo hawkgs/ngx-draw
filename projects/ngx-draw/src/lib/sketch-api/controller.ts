@@ -5,7 +5,7 @@ export class Controller {
   private _currentTool: ToolType = 'pen';
 
   constructor(private _sketch: Sketch) {
-    this.pickPen(1, 'black');
+    this.pickPen(2, 'black');
   }
 
   get currentTool(): ToolType {

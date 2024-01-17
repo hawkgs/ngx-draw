@@ -26,6 +26,8 @@ const DefaultConfig: NgxDrawConfig = {
   height: 600,
 };
 
+const CanvasMultiplicationFactor = 2;
+
 @Component({
   selector: 'ngx-draw',
   templateUrl: './draw.component.html',
@@ -47,6 +49,7 @@ export class DrawComponent implements AfterViewInit, OnInit, OnDestroy {
   private _offset: { x: number; y: number } = { x: 0, y: 0 };
 
   cfg!: NgxDrawConfig;
+  CMF = CanvasMultiplicationFactor;
 
   constructor(
     private _renderer: Renderer2,
@@ -74,12 +77,10 @@ export class DrawComponent implements AfterViewInit, OnInit, OnDestroy {
         this._renderer.listen(canvas, 'mousedown', (e) =>
           this._onCanvasMouseDown(e),
         ),
-        this._renderer.listen(canvas, 'mouseup', (e) =>
-          this._onCanvasMouseUp(e),
-        ),
         this._renderer.listen(canvas, 'mousemove', (e) =>
           this._onCanvasMouseMove(e),
         ),
+        this._renderer.listen(canvas, 'mouseup', () => this._onCanvasMouseUp()),
       ];
 
       this._cbs.concat(cbs);
@@ -96,17 +97,20 @@ export class DrawComponent implements AfterViewInit, OnInit, OnDestroy {
     ).getBoundingClientRect();
     this._offset = { x, y };
 
-    this._sketch.startApplyingTool(e.clientX - x, e.clientY - y);
+    this._sketch.startApplyingTool(
+      (e.clientX - x) * this.CMF,
+      (e.clientY - y) * this.CMF,
+    );
   }
 
-  private _onCanvasMouseUp(e: Event) {
+  private _onCanvasMouseUp() {
     this._sketch.stopApplyingTool();
   }
 
   private _onCanvasMouseMove(e: MouseEvent) {
     this._sketch.moveTool(
-      e.clientX - this._offset.x,
-      e.clientY - this._offset.y,
+      (e.clientX - this._offset.x) * this.CMF,
+      (e.clientY - this._offset.y) * this.CMF,
     );
   }
 }

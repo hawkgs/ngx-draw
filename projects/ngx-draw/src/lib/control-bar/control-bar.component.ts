@@ -13,7 +13,7 @@ import { PenColor, PenThickness } from '../sketch-api/tools';
 })
 export class ControlBarComponent {
   @Input() controller!: Controller | null;
-  thickness: PenThickness = 1;
+  thickness: PenThickness = 2;
   color: PenColor = 'black';
 
   selectPen() {

@@ -12,6 +12,14 @@ const ColorMap: { [key in PenColor]: string } = {
   yellow: '#ffc400',
 };
 
+const ThicknessMap: { [key in PenThickness]: number } = {
+  [1]: 2,
+  [2]: 4,
+  [3]: 6,
+  [4]: 10,
+  [5]: 14,
+};
+
 const EraserThickness = 10;
 
 export interface PenConfig {
@@ -29,7 +37,7 @@ export class Pen implements Tool<PenConfig> {
   setup(ctx: CanvasRenderingContext2D): void {
     this._ctx = ctx;
 
-    this._ctx.lineWidth = this.config.thickness;
+    this._ctx.lineWidth = ThicknessMap[this.config.thickness];
     this._ctx.strokeStyle = ColorMap[this.config.color];
     this._ctx.lineCap = 'round';
     this._ctx.lineJoin = 'round';
