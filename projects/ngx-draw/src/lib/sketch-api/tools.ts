@@ -29,6 +29,7 @@ export class Pen implements Tool<PenConfig> {
     this._ctx.strokeStyle = ColorMap[this.config.color];
     this._ctx.lineCap = 'round';
     this._ctx.lineJoin = 'round';
+    this._ctx.globalCompositeOperation = 'source-over';
   }
 
   start(x: number, y: number): void {
@@ -61,22 +62,33 @@ export class Eraser implements Tool<void> {
   readonly type: ToolType = 'eraser';
   readonly config: void = undefined;
   private _ctx!: CanvasRenderingContext2D;
+  private _lastPt: [number, number] = [0, 0];
 
   setup(ctx: CanvasRenderingContext2D): void {
     this._ctx = ctx;
+    this._ctx.lineCap = 'round';
+    this._ctx.lineJoin = 'round';
+    this._ctx.lineWidth = 10;
+    this._ctx.globalCompositeOperation = 'destination-out';
   }
 
   start(x: number, y: number): void {
-    throw new Error('Method not implemented.');
+    this._ctx.beginPath();
+    this._lastPt = [x, y];
   }
 
   move(x: number, y: number): void {
-    throw new Error('Method not implemented.');
+    requestAnimationFrame(() => {
+      const [lastX, lastY] = this._lastPt;
+      this._ctx.moveTo(lastX, lastY);
+      this._ctx.lineTo(x, y);
+      this._ctx.stroke();
+
+      this._lastPt = [x, y];
+    });
   }
 
-  stop(): void {
-    throw new Error('Method not implemented.');
-  }
+  stop(): void {}
 
   copy(): Tool<void> {
     return new Eraser();
