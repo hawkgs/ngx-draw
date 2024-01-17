@@ -1,6 +1,8 @@
-import { Injector, Renderer2, RendererFactory2, inject } from '@angular/core';
+import { Injector, Renderer2, RendererFactory2 } from '@angular/core';
 import { Pen } from './tools';
 import { Sketch, Tool } from './types';
+
+const HistorySize = 20;
 
 interface Operation<T> {
   path: number[];
@@ -15,6 +17,8 @@ export class HTMLCanvasSketch extends Sketch {
   private _history: Operation<unknown>[] = [];
   private _historyOffset: number = 0;
   private _renderer: Renderer2;
+  private _cacheCanvas: HTMLCanvasElement;
+  private _cacheCtx: CanvasRenderingContext2D;
 
   constructor(canvas: HTMLCanvasElement, injector: Injector) {
     super(canvas);
@@ -22,6 +26,10 @@ export class HTMLCanvasSketch extends Sketch {
     this._ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     const rendererFactory = injector.get(RendererFactory2);
     this._renderer = rendererFactory.createRenderer(null, null);
+    this._cacheCanvas = this._copyCanvas(this._canvas);
+    this._cacheCtx = this._cacheCanvas.getContext(
+      '2d',
+    ) as CanvasRenderingContext2D;
   }
 
   private get _canvas(): HTMLCanvasElement {
@@ -34,13 +42,7 @@ export class HTMLCanvasSketch extends Sketch {
     }
 
     this._historyOffset--;
-    const opIdx = this._history.length + this._historyOffset;
-
-    this._clearCanvas();
-
-    for (let i = 0; i < opIdx; i += 1) {
-      this._applyOperation(this._history[i]);
-    }
+    this._applyHistoryChange();
   }
 
   redo(): void {
@@ -49,13 +51,7 @@ export class HTMLCanvasSketch extends Sketch {
     }
 
     this._historyOffset++;
-    const opIdx = this._history.length + this._historyOffset;
-
-    this._clearCanvas();
-
-    for (let i = 0; i < opIdx; i += 1) {
-      this._applyOperation(this._history[i]);
-    }
+    this._applyHistoryChange();
   }
 
   exportAsPng(): void {
@@ -90,7 +86,7 @@ export class HTMLCanvasSketch extends Sketch {
     this._tool.stop();
     this._toolInUse = false;
 
-    this._history.push({
+    this._addHistoryOperation({
       path: [...this._currentPath],
       tool: this._tool.copy(),
     });
@@ -105,17 +101,63 @@ export class HTMLCanvasSketch extends Sketch {
 
   clear() {
     this._clearCanvas();
+    this._clearCacheCanvas();
     this._toolInUse = false;
     this._currentPath = [];
     this._history = [];
   }
 
   private _clearCanvas() {
-    this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+    const { width, height } = this._canvas;
+    this._ctx.clearRect(0, 0, width, height);
   }
 
-  private _applyOperation(op: Operation<unknown>) {
-    op.tool.setup(this._ctx);
+  private _clearCacheCanvas() {
+    const { width, height } = this._cacheCanvas;
+    this._cacheCtx.clearRect(0, 0, width, height);
+  }
+
+  private _copyCanvas(
+    source: HTMLCanvasElement,
+    dest?: HTMLCanvasElement,
+  ): HTMLCanvasElement {
+    if (!dest) {
+      dest = this._renderer.createElement('canvas') as HTMLCanvasElement;
+      dest.width = this._canvas.width;
+      dest.height = this._canvas.height;
+    }
+
+    const destCtx = dest.getContext('2d');
+    destCtx?.drawImage(source, 0, 0);
+
+    return dest;
+  }
+
+  private _addHistoryOperation(op: Operation<unknown>) {
+    this._history.push(op);
+
+    if (this._history.length > HistorySize) {
+      const first = this._history.shift() as Operation<unknown>;
+      this._applyOperation(first, this._cacheCtx);
+    }
+  }
+
+  private _applyHistoryChange() {
+    const opIdx = this._history.length + this._historyOffset;
+
+    this._clearCanvas();
+    this._copyCanvas(this._cacheCanvas, this._canvas);
+
+    for (let i = 0; i < opIdx; i += 1) {
+      this._applyOperation(this._history[i], this._ctx);
+    }
+  }
+
+  private _applyOperation(
+    op: Operation<unknown>,
+    ctx: CanvasRenderingContext2D,
+  ) {
+    op.tool.setup(ctx);
     op.tool.start(op.path[0], op.path[1]);
 
     for (let i = 3; i < op.path.length; i += 2) {

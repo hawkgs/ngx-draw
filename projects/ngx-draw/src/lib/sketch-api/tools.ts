@@ -20,7 +20,7 @@ const ThicknessMap: { [key in PenThickness]: number } = {
   [5]: 14,
 };
 
-const EraserThickness = 10;
+const EraserThickness = 30;
 
 export interface PenConfig {
   thickness: PenThickness;
