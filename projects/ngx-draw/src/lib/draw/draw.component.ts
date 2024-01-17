@@ -44,6 +44,7 @@ export class DrawComponent implements AfterViewInit, OnInit, OnDestroy {
   private _sketch!: Sketch;
   private _cbs: (() => void)[] = [];
   private _controller?: Controller;
+  private _offset: { x: number; y: number } = { x: 0, y: 0 };
 
   cfg!: NgxDrawConfig;
 
@@ -60,6 +61,7 @@ export class DrawComponent implements AfterViewInit, OnInit, OnDestroy {
     this._sketch = sketch;
     this._controller = ctrl;
 
+    // Note(Georgi): A change happening after the component has been checked (i.e. ngx-controls-bar)
     setTimeout(() => {
       this.controller$.next(ctrl);
     });
@@ -86,7 +88,12 @@ export class DrawComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   private _onCanvasMouseDown(e: MouseEvent) {
-    this._sketch.startApplyingTool(e.clientX, e.clientY);
+    const { x, y } = (
+      this.canvas.nativeElement as HTMLElement
+    ).getBoundingClientRect();
+    this._offset = { x, y };
+
+    this._sketch.startApplyingTool(e.clientX - x, e.clientY - y);
   }
 
   private _onCanvasMouseUp(e: Event) {
@@ -94,6 +101,9 @@ export class DrawComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   private _onCanvasMouseMove(e: MouseEvent) {
-    this._sketch.moveTool(e.clientX, e.clientY);
+    this._sketch.moveTool(
+      e.clientX - this._offset.x,
+      e.clientY - this._offset.y,
+    );
   }
 }

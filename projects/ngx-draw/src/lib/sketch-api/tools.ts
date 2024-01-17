@@ -27,6 +27,8 @@ export class Pen implements Tool<PenConfig> {
     this._ctx = ctx;
     this._ctx.lineWidth = this.config.thickness;
     this._ctx.strokeStyle = ColorMap[this.config.color];
+    this._ctx.lineCap = 'round';
+    this._ctx.lineJoin = 'round';
   }
 
   start(x: number, y: number): void {
@@ -35,12 +37,14 @@ export class Pen implements Tool<PenConfig> {
   }
 
   move(x: number, y: number): void {
-    const [lastX, lastY] = this._lastPt;
-    this._ctx.moveTo(lastX, lastY);
-    this._ctx.lineTo(x, y);
-    this._ctx.stroke();
+    requestAnimationFrame(() => {
+      const [lastX, lastY] = this._lastPt;
+      this._ctx.moveTo(lastX, lastY);
+      this._ctx.lineTo(x, y);
+      this._ctx.stroke();
 
-    this._lastPt = [x, y];
+      this._lastPt = [x, y];
+    });
   }
 
   stop(): void {}
