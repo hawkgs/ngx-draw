@@ -17,6 +17,10 @@ export class HTMLCanvasSketch extends Sketch {
   constructor(canvas: HTMLCanvasElement) {
     super(canvas);
     this._ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+
+    (window as any).getHistory = () => {
+      console.log(this._history);
+    };
   }
 
   private get _canvas(): HTMLCanvasElement {
@@ -34,7 +38,9 @@ export class HTMLCanvasSketch extends Sketch {
     this._clearCanvas();
 
     for (let i = 0; i < opIdx; i += 1) {
+      // setTimeout(() => {
       this._applyOperation(this._history[i]);
+      // });
     }
   }
 

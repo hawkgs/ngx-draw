@@ -11,6 +11,8 @@ const ColorMap: { [key in PenColor]: string } = {
   blue: 'blue',
 };
 
+const EraserThickness = 10;
+
 export interface PenConfig {
   thickness: PenThickness;
   color: PenColor;
@@ -25,11 +27,11 @@ export class Pen implements Tool<PenConfig> {
 
   setup(ctx: CanvasRenderingContext2D): void {
     this._ctx = ctx;
+
     this._ctx.lineWidth = this.config.thickness;
     this._ctx.strokeStyle = ColorMap[this.config.color];
     this._ctx.lineCap = 'round';
     this._ctx.lineJoin = 'round';
-    this._ctx.globalCompositeOperation = 'source-over';
   }
 
   start(x: number, y: number): void {
@@ -38,14 +40,12 @@ export class Pen implements Tool<PenConfig> {
   }
 
   move(x: number, y: number): void {
-    requestAnimationFrame(() => {
-      const [lastX, lastY] = this._lastPt;
-      this._ctx.moveTo(lastX, lastY);
-      this._ctx.lineTo(x, y);
-      this._ctx.stroke();
+    const [lastX, lastY] = this._lastPt;
+    this._ctx.moveTo(lastX, lastY);
+    this._ctx.lineTo(x, y);
+    this._ctx.stroke();
 
-      this._lastPt = [x, y];
-    });
+    this._lastPt = [x, y];
   }
 
   stop(): void {}
@@ -66,29 +66,30 @@ export class Eraser implements Tool<void> {
 
   setup(ctx: CanvasRenderingContext2D): void {
     this._ctx = ctx;
+
+    this._ctx.lineWidth = EraserThickness;
     this._ctx.lineCap = 'round';
     this._ctx.lineJoin = 'round';
-    this._ctx.lineWidth = 10;
-    this._ctx.globalCompositeOperation = 'destination-out';
   }
 
   start(x: number, y: number): void {
+    this._ctx.globalCompositeOperation = 'destination-out';
     this._ctx.beginPath();
     this._lastPt = [x, y];
   }
 
   move(x: number, y: number): void {
-    requestAnimationFrame(() => {
-      const [lastX, lastY] = this._lastPt;
-      this._ctx.moveTo(lastX, lastY);
-      this._ctx.lineTo(x, y);
-      this._ctx.stroke();
+    const [lastX, lastY] = this._lastPt;
+    this._ctx.moveTo(lastX, lastY);
+    this._ctx.lineTo(x, y);
+    this._ctx.stroke();
 
-      this._lastPt = [x, y];
-    });
+    this._lastPt = [x, y];
   }
 
-  stop(): void {}
+  stop(): void {
+    this._ctx.globalCompositeOperation = 'source-over';
+  }
 
   copy(): Tool<void> {
     return new Eraser();
